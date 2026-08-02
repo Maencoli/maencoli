@@ -1,0 +1,36 @@
+name: Maencoli
+options:
+  bundleIdPrefix: com.maencoli
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    GENERATE_INFOPLIST_FILE: NO
+targets:
+  Maencoli:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Maencoli
+        excludes:
+          - Resources/Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.maencoli.app
+        INFOPLIST_FILE: Maencoli/Resources/Info.plist
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        DEVELOPMENT_ASSET_PATHS: ""
+schemes:
+  Maencoli:
+    build:
+      targets:
+        Maencoli: all
+    run:
+      config: Debug
+    archive:
+      config: Release
