@@ -15,6 +15,12 @@ final class Book {
     @Relationship(deleteRule: .cascade, inverse: \Highlight.book)
     var highlights: [Highlight] = []
 
+    /// Memos attached directly to this book (no specific highlight) — created via
+    /// the book-detail-only "메모만 남기기" flow, or left behind when a highlight
+    /// that had memos is deleted.
+    @Relationship(deleteRule: .cascade, inverse: \Note.book)
+    var notes: [Note] = []
+
     init(
         title: String,
         author: String? = nil,

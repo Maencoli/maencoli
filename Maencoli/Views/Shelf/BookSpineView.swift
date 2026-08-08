@@ -7,7 +7,7 @@ struct BookSpineView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 3)
-                .fill(item.spineColor.gradient)
+                .fill(LinearGradient(gradient: item.spineGradient, startPoint: .topLeading, endPoint: .bottomTrailing))
                 .frame(width: item.spineWidth, height: Self.height)
                 .shadow(color: .black.opacity(0.25), radius: 2, x: 1, y: 1)
 
@@ -29,4 +29,5 @@ struct BookSpineView: View {
         BookSpineView(item: .weekGroup(key: "2026-W32", title: "2026년 32주", highlights: []))
     }
     .padding()
+    .background(Color.white)
 }

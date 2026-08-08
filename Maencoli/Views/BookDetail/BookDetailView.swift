@@ -3,7 +3,8 @@ import SwiftData
 
 struct BookDetailView: View {
     @Bindable var book: Book
-    @Environment(\.modelContext) private var modelContext
+    @State private var showAddChoice = false
+    @State private var pendingAddMode: AddFlowMode?
 
     private var sortedHighlights: [Highlight] {
         book.highlights.sorted {
@@ -15,12 +16,14 @@ struct BookDetailView: View {
             }
         }
     }
+    private var sortedNotes: [Note] {
+        book.notes.sorted { $0.createdAt < $1.createdAt }
+    }
 
     var body: some View {
         List {
             Section {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(book.title).font(.title2.bold())
                     if let author = book.author {
                         Text(author).foregroundStyle(.secondary)
                     }
@@ -31,20 +34,54 @@ struct BookDetailView: View {
                 .padding(.vertical, 4)
             }
 
-            Section("저장한 문장 (\(sortedHighlights.count))") {
-                ForEach(sortedHighlights) { highlight in
-                    HighlightRow(highlight: highlight)
+            if !sortedHighlights.isEmpty {
+                Section("저장한 문장 (\(sortedHighlights.count))") {
+                    ForEach(sortedHighlights) { highlight in
+                        HighlightCard(highlight: highlight)
+                    }
                 }
-                .onDelete(perform: delete)
+            }
+
+            if !sortedNotes.isEmpty {
+                Section("책 메모 (\(sortedNotes.count))") {
+                    ForEach(sortedNotes) { note in
+                        NoteCard(note: note)
+                    }
+                }
+            }
+
+            if sortedHighlights.isEmpty && sortedNotes.isEmpty {
+                ContentUnavailableView("아직 저장된 기록이 없어요", systemImage: "text.quote")
             }
         }
-        .navigationTitle("책 정보")
+        .navigationTitle(book.title)
         .navigationBarTitleDisplayMode(.inline)
-    }
-
-    private func delete(at offsets: IndexSet) {
-        for index in offsets {
-            modelContext.delete(sortedHighlights[index])
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    showAddChoice = true
+                } label: {
+                    Label("하이라이트 추가", systemImage: "plus")
+                }
+            }
+        }
+        .confirmationDialog("\(book.title)에 추가", isPresented: $showAddChoice, titleVisibility: .visible) {
+            Button("사진으로 추가") { pendingAddMode = .photo }
+            Button("직접 입력하기") { pendingAddMode = .manual }
+            Button("메모만 남기기") { pendingAddMode = .memoOnly }
+            Button("취소", role: .cancel) {}
+        }
+        .fullScreenCover(item: $pendingAddMode) { mode in
+            switch mode {
+            case .photo:
+                CaptureFlowView(preselectedBook: book)
+            case .manual:
+                ManualEntryView(preselectedBook: book)
+            case .memoOnly:
+                MemoOnlyEntryView(preselectedBook: book)
+            case .bookOnly:
+                EmptyView()
+            }
         }
     }
 }

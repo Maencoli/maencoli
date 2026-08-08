@@ -12,7 +12,7 @@ struct ShelfItem: Identifiable {
     let kind: Kind
     let title: String
     let spineWidth: CGFloat
-    let spineColor: Color
+    let spineGradient: Gradient
 
     static func book(_ book: Book) -> ShelfItem {
         ShelfItem(
@@ -20,7 +20,7 @@ struct ShelfItem: Identifiable {
             kind: .book(book),
             title: book.title,
             spineWidth: SpineWidthCalculator.width(forPageCount: book.pageCount),
-            spineColor: SpineColor.color(for: book.title)
+            spineGradient: SpineColor.gradient(for: book.title)
         )
     }
 
@@ -30,16 +30,41 @@ struct ShelfItem: Identifiable {
             kind: .weekGroup(key: key, highlights: highlights),
             title: title,
             spineWidth: SpineWidthCalculator.width(forHighlightCount: highlights.count),
-            spineColor: SpineColor.color(for: key)
+            spineGradient: SpineColor.weekGroupGradient
         )
     }
 }
 
+/// Spine colors, matching the reference palette (vivid, distinct hues rather
+/// than muted jewel tones) — book-only, unrelated to the highlighter/UI accent.
 enum SpineColor {
-    private static let palette: [Color] = [.brown, .indigo, .teal, .orange, .purple, .pink, .mint, .cyan]
+    private static let palette: [(Color, Color)] = [
+        (Color(hex: 0x00AAEE), Color(hex: 0x0577A3)), // cerulean
+        (Color(hex: 0xD9381E), Color(hex: 0xA12912)), // vermillion
+        (Color(hex: 0xF4C430), Color(hex: 0xB8860B)), // saffron
+        (Color(hex: 0xF04894), Color(hex: 0xB8306E)), // rose
+        (Color(hex: 0x8BCC65), Color(hex: 0x5F9A3F)), // spring green
+        (Color(hex: 0x29BDCF), Color(hex: 0x1A8B99)), // lake blue
+        (Color(hex: 0x009698), Color(hex: 0x026E6F)), // viridian teal
+        (Color(hex: 0x055983), Color(hex: 0x033B57)), // sapphire navy
+    ]
 
-    static func color(for seed: String) -> Color {
-        let hash = abs(seed.hashValue)
-        return palette[hash % palette.count]
+    /// Neutral "pewter" tone for the not-yet-assigned weekly group, so it
+    /// reads as distinct from every real, named book on the shelf.
+    static let weekGroupGradient = Gradient(colors: [Color(hex: 0xB7AF9C), Color(hex: 0x9D9483)])
+
+    static func gradient(for seed: String) -> Gradient {
+        let pair = palette[abs(seed.hashValue) % palette.count]
+        return Gradient(colors: [pair.0, pair.1])
+    }
+}
+
+extension Color {
+    init(hex: UInt32) {
+        self.init(
+            red: Double((hex >> 16) & 0xFF) / 255,
+            green: Double((hex >> 8) & 0xFF) / 255,
+            blue: Double(hex & 0xFF) / 255
+        )
     }
 }
