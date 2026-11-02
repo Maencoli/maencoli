@@ -62,7 +62,7 @@
 
   /* ---------- phone (S4/S5) ---------- */
   #s4 { background: var(--paper); }
-  .cap { position: absolute; left: 60px; right: 60px; top: 190px; text-align: center; font-size: 82px;
+  .cap { z-index: 5; position: absolute; left: 60px; right: 60px; top: 190px; text-align: center; font-size: 82px;
     font-weight: 800; letter-spacing: -3px; line-height: 1.2; }
   .cap .mark { color: var(--ink); }
   #phone { position: absolute; left: 150px; top: 470px; width: 780px; height: 1640px; background: #111;
@@ -194,12 +194,12 @@
 
 <!-- S6: shelf -->
 <div class="scene" id="s6">
-  <div class="cap" id="capD">두꺼운 책은<br><span class="mark">두껍게 꽂혀요</span></div>
+  <div class="cap" id="capD">모은 문장은<br><span class="mark">내 책장에 꽂히고</span></div>
   <div class="cap" id="capE">읽은 만큼<br><span class="mark">책장이 차올라요</span></div>
   <div id="shelf"></div>
   <div class="plank" style="top:960px"></div>
   <div class="plank" style="top:1400px"></div>
-  <div id="thud">쿵!</div>
+  <div id="thud">착!</div>
   <div id="stat">2026년 · <b>23권</b> · 모은 문장 <b>214개</b></div>
 </div>
 
@@ -264,7 +264,7 @@ const books = [
 const shelf = $('shelf'); const spines = [];
 let x = 100, row = 0;
 books.forEach((b, i) => {
-  const w = Math.round(46 + (b[1] - 100) / 620 * 74);
+  const w = Math.round(48 + rnd() * 60); // app assigns spine thickness randomly
   if (x + w > 980) { row++; x = 100; }
   const base = row === 0 ? 960 : 1400;
   const s = document.createElement('div'); s.className = 'spine';
