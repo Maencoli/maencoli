@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --paper: #F6F1E7;
+    --ink: #1C1A17;
+    --hl: #FFE14D;
+    --red: #FF3B30;
+    --sub: #6E675C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--paper);
+    font-family: 'Pretendard', sans-serif; color: var(--ink); word-break: keep-all; }
+  .scene { position: absolute; inset: 0; overflow: hidden; opacity: 0; }
+  .abs { position: absolute; }
+  .center-x { left: 0; right: 0; text-align: center; }
+
+  /* ---------- S1/S2 gallery ---------- */
+  #s1 { background: #000; }
+  #grid { position: absolute; left: 0; top: 0; width: 1080px; }
+  .tile { position: absolute; width: 266px; height: 266px; overflow: hidden; display: flex;
+    align-items: center; justify-content: center; font-size: 120px; }
+  .tile.book { background: linear-gradient(135deg, #5b4636, #3e2f25); }
+  .tile.book .pg { position: absolute; left: 28px; top: 22px; width: 220px; height: 236px;
+    background: #FBF7EE; transform: rotate(-4deg); box-shadow: 4px 6px 10px rgba(0,0,0,.4);
+    padding: 22px 18px; }
+  .tile.book .pg i { display: block; height: 7px; background: #b9b2a5; margin-bottom: 11px; border-radius: 2px; }
+  .tile.shot { background: #fff; flex-direction: column; align-items: stretch; padding: 22px 20px; gap: 12px; }
+  .tile.shot b { display: block; height: 18px; border-radius: 9px; background: #e3e3e8; }
+  .tile.shot b.blue { background: #0a84ff; width: 60%; align-self: flex-end; }
+  .ring { position: absolute; inset: 6px; border: 9px solid var(--red); border-radius: 50%; opacity: 0; }
+  .dim { position: absolute; inset: 0; background: #000; opacity: 0; }
+  #topShade { position: absolute; left: 0; right: 0; top: 0; height: 900px;
+    background: linear-gradient(#000 0%, rgba(0,0,0,.85) 45%, rgba(0,0,0,0) 100%); }
+  .hook { position: absolute; left: 70px; right: 70px; color: #fff; font-weight: 800;
+    font-size: 100px; line-height: 1.18; letter-spacing: -3px; text-shadow: 0 4px 24px rgba(0,0,0,.5); }
+  .mark { background: linear-gradient(transparent 58%, var(--hl) 58%, var(--hl) 92%, transparent 92%);
+    background-repeat: no-repeat; color: #fff; }
+  .boxhl { background-image: linear-gradient(var(--hl), var(--hl)); background-repeat: no-repeat;
+    background-size: 0% 100%; color: var(--ink); padding: 0 14px; margin-left: -14px; text-shadow: none;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+  #count { position: absolute; left: 70px; top: 610px; font-size: 44px; font-weight: 600; color: #fff;
+    background: rgba(255,255,255,.18); padding: 14px 30px; border-radius: 60px; backdrop-filter: blur(8px); }
+
+  #card2 { position: absolute; left: 90px; right: 90px; top: 360px; background: #fff; border-radius: 48px;
+    padding: 64px 60px 70px; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+  #card2 .k { font-size: 50px; font-weight: 700; color: var(--sub); letter-spacing: -1.5px; }
+  #card2 .big { font-size: 112px; font-weight: 900; letter-spacing: -4px; margin-top: 20px; line-height: 1.1; }
+  #card2 .row { display: flex; justify-content: space-between; align-items: baseline; margin-top: 40px;
+    padding-top: 40px; border-top: 3px dashed #ddd6c8; font-size: 60px; font-weight: 700; letter-spacing: -2px; }
+  #card2 .zero { font-size: 150px; font-weight: 900; color: var(--red); line-height: 1; }
+
+  /* ---------- S3 reveal ---------- */
+  #s3 { background: var(--paper); }
+  .say { font-size: 86px; font-weight: 800; letter-spacing: -3px; }
+  .logo { font-size: 250px; font-weight: 900; letter-spacing: -12px; display: inline-block; position: relative; }
+  .logo .sw { position: absolute; left: -20px; right: -20px; top: 52%; height: 38%; background: var(--hl);
+    z-index: -1; transform-origin: left center; border-radius: 10px; }
+  .tag { font-size: 54px; font-weight: 600; color: var(--sub); letter-spacing: -1.5px; }
+
+  /* ---------- phone (S4/S5) ---------- */
+  #s4 { background: var(--paper); }
+  .cap { position: absolute; left: 60px; right: 60px; top: 190px; text-align: center; font-size: 82px;
+    font-weight: 800; letter-spacing: -3px; line-height: 1.2; }
+  .cap .mark { color: var(--ink); }
+  #phone { position: absolute; left: 150px; top: 470px; width: 780px; height: 1640px; background: #111;
+    border-radius: 110px; padding: 22px; box-shadow: 0 40px 90px rgba(60,40,10,.35); }
+  #screen { position: relative; width: 100%; height: 100%; border-radius: 90px; overflow: hidden; background: #0d0d0d; }
+  #island { position: absolute; left: 50%; top: 26px; width: 210px; height: 60px; margin-left: -105px;
+    background: #000; border-radius: 40px; z-index: 20; }
+  #appbg { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  #page { position: absolute; left: 50px; top: 170px; width: 636px; height: 900px; background: #FBF7EE;
+    box-shadow: 0 12px 40px rgba(0,0,0,.45); padding: 60px 50px; font-family: 'Noto Serif KR', serif;
+    font-size: 31px; line-height: 2.0; color: #2a251f; letter-spacing: -0.5px; }
+  #page .ln { position: relative; white-space: nowrap; }
+  #page .ln .box { position: absolute; left: -8px; right: -8px; top: 6px; bottom: 6px; border-radius: 8px;
+    background: rgba(10,132,255,.16); border: 2px solid rgba(10,132,255,.45); opacity: 0; }
+  #page .pno { position: absolute; bottom: 36px; left: 0; right: 0; text-align: center; font-size: 26px; color: #8a8173; }
+  .hlspan { background-image: linear-gradient(var(--hl), var(--hl)); background-repeat: no-repeat;
+    background-position: 0 70%; background-size: 0% 60%; position: relative; z-index: 1; }
+  #scan { position: absolute; left: 30px; right: 30px; height: 8px; background: #0a84ff; border-radius: 4px;
+    box-shadow: 0 0 30px 10px rgba(10,132,255,.55); opacity: 0; }
+  #shutter { position: absolute; left: 50%; bottom: 300px; width: 150px; height: 150px; margin-left: -75px;
+    border-radius: 50%; border: 10px solid #fff; background: rgba(255,255,255,.25); }
+  #shutter::after { content: ''; position: absolute; inset: 10px; border-radius: 50%; background: #fff; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; z-index: 15; }
+  #chip { position: absolute; left: 50px; top: 110px; font-size: 32px; font-weight: 700; background: #EEF5FF;
+    color: #0a5fd1; padding: 10px 24px; border-radius: 40px; opacity: 0; }
+  #finger { position: absolute; width: 96px; height: 96px; border-radius: 50%; background: rgba(40,40,40,.28);
+    border: 4px solid rgba(255,255,255,.9); opacity: 0; z-index: 12; box-shadow: 0 6px 20px rgba(0,0,0,.25); }
+  #toast { position: absolute; left: 50%; top: 110px; transform: translateX(-50%); white-space: nowrap;
+    background: #1C1A17; color: #fff; font-size: 32px; font-weight: 700; padding: 14px 30px; border-radius: 40px; opacity: 0; z-index: 13; }
+  #sheet { position: absolute; left: 0; right: 0; bottom: 0; height: 640px; background: #fff;
+    border-radius: 56px 56px 0 0; box-shadow: 0 -10px 50px rgba(0,0,0,.18); padding: 40px 48px; z-index: 14; }
+  #sheet .grab { width: 90px; height: 10px; background: #ddd; border-radius: 5px; margin: 0 auto 34px; }
+  #sheet .bk { display: inline-flex; gap: 14px; align-items: center; font-size: 30px; font-weight: 700;
+    background: #F3EEE4; padding: 12px 24px; border-radius: 30px; }
+  #sheet .bk i { width: 16px; height: 38px; background: #D9381E; border-radius: 3px; display: inline-block; }
+  #sheet .q { font-family: 'Noto Serif KR', serif; font-size: 40px; line-height: 1.6; margin-top: 30px;
+    border-left: 10px solid var(--hl); padding-left: 26px; letter-spacing: -1px; }
+  #sheet .memo { margin-top: 30px; font-size: 32px; color: var(--sub); }
+  #sheet .meta { margin-top: 16px; font-size: 28px; color: #a69e90; }
+
+  /* ---------- S6 shelf ---------- */
+  #s6 { background: var(--paper); }
+  .plank { position: absolute; left: 70px; right: 70px; height: 34px; background: linear-gradient(#c79a62, #9c6f3b);
+    border-radius: 6px; box-shadow: 0 14px 22px rgba(80,50,20,.25); }
+  .spine { position: absolute; height: 380px; border-radius: 6px; box-shadow: inset -6px 0 0 rgba(0,0,0,.12), 3px 3px 6px rgba(0,0,0,.25);
+    display: flex; align-items: center; justify-content: center; }
+  .spine span { writing-mode: vertical-rl; color: #fff; font-weight: 700; font-size: 30px; letter-spacing: 2px; white-space: nowrap; }
+  #stat { position: absolute; left: 0; right: 0; top: 1480px; text-align: center; font-size: 50px; font-weight: 700;
+    color: var(--sub); letter-spacing: -1.5px; }
+  #stat b { color: var(--ink); font-weight: 900; }
+  #thud { position: absolute; font-size: 58px; font-weight: 900; color: var(--red); opacity: 0; transform: rotate(-10deg); }
+
+  /* ---------- S7 CTA ---------- */
+  #s7 { background: var(--ink); color: #fff; }
+  #s7 .big { position: absolute; left: 70px; right: 70px; top: 470px; font-size: 104px; font-weight: 900;
+    line-height: 1.22; letter-spacing: -4px; }
+  #s7 .big .mark { color: var(--ink); }
+  #s7 .small { position: absolute; left: 70px; right: 70px; top: 820px; font-size: 52px; font-weight: 600;
+    color: #cfc8bb; letter-spacing: -1.5px; line-height: 1.4; }
+  #badge { position: absolute; left: 70px; top: 1120px; display: flex; gap: 30px; align-items: center;
+    background: #fff; color: var(--ink); padding: 30px 46px 30px 30px; border-radius: 40px; }
+  #badge .ic { width: 120px; height: 120px; border-radius: 28px; background: var(--paper); position: relative; overflow: hidden; }
+  #badge .ic i { position: absolute; bottom: 18px; width: 18px; border-radius: 3px; }
+  #badge .t1 { font-size: 58px; font-weight: 900; letter-spacing: -2px; }
+  #badge .t2 { font-size: 34px; font-weight: 600; color: var(--sub); }
+  #arrow { position: absolute; left: 70px; top: 1340px; font-size: 44px; font-weight: 700; color: var(--hl); }
+</style>
+</head>
+<body>
+
+<!-- S1 + S2: camera roll -->
+<div class="scene" id="s1">
+  <div id="grid"></div>
+  <div id="topShade"></div>
+  <div class="hook" id="h1" style="top:230px">분명 찍어놨는데…</div>
+  <div class="hook" id="h2" style="top:360px"><span class="boxhl" id="h2m">그 문장 어디 갔지?</span></div>
+  <div id="count">최근 항목 · 사진 3,847장</div>
+  <div id="card2">
+    <div class="k">책 읽는 사람 갤러리 특</div>
+    <div class="big">책 페이지 사진<br>812장</div>
+    <div class="row"><span>다시 열어본 적</span><span><span class="zero">0</span>번</span></div>
+  </div>
+</div>
+
+<!-- S3: reveal -->
+<div class="scene" id="s3">
+  <div class="abs center-x say" id="say" style="top:560px">그래서 만들었어요</div>
+  <div class="abs center-x" style="top:760px"><span class="logo" id="logo"><span class="sw" id="sw"></span>책췤</span></div>
+  <div class="abs center-x tag" id="tagline" style="top:1110px">밑줄 대신, 찰칵.</div>
+</div>
+
+<!-- S4 + S5: phone -->
+<div class="scene" id="s4">
+  <div class="cap" id="capA">찍으면<br>글자가 <span class="mark">알아서 읽히고</span></div>
+  <div class="cap" id="capB">마음에 든 문장만<br><span class="mark">쓱— 긋기</span></div>
+  <div class="cap" id="capC">사진은 안 남기고<br><span class="mark">문장만 남겨요</span></div>
+  <div id="phone"><div id="screen">
+    <div id="island"></div>
+    <div id="appbg"></div>
+    <div id="page">
+      <div class="ln"><div class="box"></div>책을 덮고 나서도 한참을 그대로</div>
+      <div class="ln"><div class="box"></div>앉아 있었다. 어떤 문장은 읽는 순</div>
+      <div class="ln"><div class="box"></div>간보다 덮고 난 뒤에 더 오래 남는</div>
+      <div class="ln"><div class="box"></div>다. 그날 밤 나는 그 문장을 몇 번</div>
+      <div class="ln"><div class="box"></div>이고 다시 떠올렸다.</div>
+      <div class="ln"><div class="box"></div><span class="hlspan" id="hlA">이해했기 때문이 아니라,</span></div>
+      <div class="ln"><div class="box"></div><span class="hlspan" id="hlB">이해받은 것 같았기 때문이다.</span></div>
+      <div class="ln"><div class="box"></div>창밖으로 마지막 버스가 지나갔고,</div>
+      <div class="ln"><div class="box"></div>나는 불을 끄지 않은 채 다음 장을</div>
+      <div class="ln"><div class="box"></div>넘기지 못했다. 넘기면 이 기분이</div>
+      <div class="ln"><div class="box"></div>끝나 버릴 것 같아서.</div>
+      <div class="pno">142</div>
+    </div>
+    <div id="scan"></div>
+    <div id="shutter"></div>
+    <div id="chip">📄 p.142 자동 인식</div>
+    <div id="finger"></div>
+    <div id="toast">✓ 하이라이트 추가됨</div>
+    <div id="sheet">
+      <div class="grab"></div>
+      <div class="bk"><i></i>어떤 밤의 문장들 · p.142</div>
+      <div class="q">이해했기 때문이 아니라,<br>이해받은 것 같았기 때문이다.</div>
+      <div class="memo">✎ 오늘 나한테 하는 말 같았다</div>
+      <div class="meta">2026. 11. 2 · 갤러리에 사진 0장 추가</div>
+    </div>
+    <div id="flash"></div>
+  </div></div>
+</div>
+
+<!-- S6: shelf -->
+<div class="scene" id="s6">
+  <div class="cap" id="capD">두꺼운 책은<br><span class="mark">두껍게 꽂혀요</span></div>
+  <div class="cap" id="capE">읽은 만큼<br><span class="mark">책장이 차올라요</span></div>
+  <div id="shelf"></div>
+  <div class="plank" style="top:960px"></div>
+  <div class="plank" style="top:1400px"></div>
+  <div id="thud">쿵!</div>
+  <div id="stat">2026년 · <b>23권</b> · 모은 문장 <b>214개</b></div>
+</div>
+
+<!-- S7: CTA -->
+<div class="scene" id="s7">
+  <div class="big" id="ctaBig">책 좋아하는 친구한테<br><span class="boxhl" id="ctaM">이 영상 보내주기</span> 📚</div>
+  <div class="small" id="ctaSmall">그 친구 갤러리도<br>책 사진 천지일 거예요</div>
+  <div id="badge">
+    <div class="ic"><i style="left:20px;height:70px;background:#D9381E"></i><i style="left:42px;height:84px;background:#00AAEE"></i><i style="left:64px;height:62px;background:#F4C430"></i><i style="left:86px;height:76px;background:#009698"></i></div>
+    <div><div class="t1">책췤</div><div class="t2">App Store에서 ‘책췤’ 검색</div></div>
+  </div>
+  <div id="arrow">↑ 프로필 링크에서 바로 받기</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const eOut = x => 1 - Math.pow(1 - x, 3);
+const eInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const eBounce = x => { const n = 7.5625, d = 2.75;
+  if (x < 1 / d) return n * x * x; if (x < 2 / d) return n * (x -= 1.5 / d) * x + .75;
+  if (x < 2.5 / d) return n * (x -= 2.25 / d) * x + .9375; return n * (x -= 2.625 / d) * x + .984375; };
+const fade = (t, a, b, fi = .25, fo = .25) => Math.min(seg(t, a, a + fi), 1 - seg(t, b - fo, b));
+function pop(el, p, dy = 40) { el.style.opacity = clamp(p * 1.4); el.style.transform = `translateY(${(1 - eOut(p)) * dy}px)`; }
+
+/* ---------- build gallery ---------- */
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const T = 266, G = 5, ROWS = 46;
+const others = [
+  ['🍜', '#f3c9a0'], ['🐈', '#d9cfc3'], ['☕️', '#c8a888'], ['🌅', 'linear-gradient(#ff9a62,#6b5bd6)'],
+  ['🥐', '#f6dcb1'], ['🐶', '#cbe3c0'], ['🌸', '#ffd6e0'], ['🍰', '#fde9d6'], ['🏖️', 'linear-gradient(#7fd3ff,#f7e3b5)'],
+  ['🧾', '#eeeeee'], ['🙂', 'linear-gradient(#ffd1a8,#ffb38a)'], ['🍕', '#f2d3a4'], ['🎄', '#cfe8d4'], ['🛒', '#e4e9f2']];
+const grid = $('grid'); const tiles = [];
+for (let r = 0; r < ROWS; r++) for (let c = 0; c < 4; c++) {
+  const d = document.createElement('div'); d.className = 'tile';
+  d.style.left = c * (T + G) + 'px'; d.style.top = r * (T + G) + 'px';
+  const x = rnd(); let kind;
+  if (x < .27) { kind = 'book'; d.classList.add('book');
+    const pg = document.createElement('div'); pg.className = 'pg'; pg.style.transform = `rotate(${(rnd() * 10 - 5).toFixed(1)}deg)`;
+    for (let i = 0; i < 9; i++) { const l = document.createElement('i'); l.style.width = (i === 8 ? 40 + rnd() * 30 : 85 + rnd() * 15) + '%'; pg.appendChild(l); }
+    d.appendChild(pg);
+  } else if (x < .37) { kind = 'shot'; d.classList.add('shot');
+    for (let i = 0; i < 6; i++) { const b = document.createElement('b'); if (i % 3 === 2) b.className = 'blue'; else b.style.width = (50 + rnd() * 45) + '%'; d.appendChild(b); }
+  } else { kind = 'other'; const o = others[Math.floor(rnd() * others.length)]; d.style.background = o[1]; d.textContent = o[0]; }
+  const ring = document.createElement('div'); ring.className = 'ring'; d.appendChild(ring);
+  const dim = document.createElement('div'); dim.className = 'dim'; d.appendChild(dim);
+  grid.appendChild(d); tiles.push({ el: d, r, c, kind, ring, dim });
+}
+const SCROLL_END = (ROWS * (T + G)) - 1920 - 30;
+// book tiles visible in the middle band at the end of the scroll, ringed one by one in S2
+const ringed = tiles.filter(t => t.kind === 'book' && (t.r * (T + G) - SCROLL_END) > 120 && (t.r * (T + G) - SCROLL_END) < 1700)
+  .sort((a, b) => (a.r - b.r) || (a.c - b.c));
+
+/* ---------- build shelf ---------- */
+const books = [
+  ['데미안', 248, '#00AAEE'], ['인간 실격', 180, '#D9381E'], ['노인과 바다', 140, '#F4C430'], ['이방인', 210, '#F04894'],
+  ['변신', 120, '#8BCC65'], ['1984', 460, '#055983'], ['어린 왕자', 130, '#29BDCF'], ['죄와 벌', 620, '#009698'],
+  ['페스트', 400, '#D9381E'], ['동물농장', 170, '#F4C430'], ['수레바퀴 아래서', 280, '#00AAEE'], ['위대한 개츠비', 260, '#8BCC65'],
+  ['파우스트', 520, '#F04894'], ['오만과 편견', 480, '#29BDCF'], ['코스모스', 720, '#055983']];
+const shelf = $('shelf'); const spines = [];
+let x = 100, row = 0;
+books.forEach((b, i) => {
+  const w = Math.round(46 + (b[1] - 100) / 620 * 74);
+  if (x + w > 980) { row++; x = 100; }
+  const base = row === 0 ? 960 : 1400;
+  const s = document.createElement('div'); s.className = 'spine';
+  s.style.width = w + 'px'; s.style.left = x + 'px'; s.style.top = (base - 380) + 'px';
+  s.style.background = `linear-gradient(135deg, ${b[2]}, ${b[2]}cc)`;
+  s.innerHTML = `<span>${b[0]}</span>`; shelf.appendChild(s);
+  spines.push({ el: s, x, w, base, last: i === books.length - 1 });
+  x += w + 8;
+});
+
+/* ---------- timeline ---------- */
+const SCENES = { s1: [0, 7.2], s3: [7.0, 8.9], s4: [8.7, 15.8], s6: [15.6, 19.4], s7: [19.2, 23.0] };
+window.DURATION = 22.5;
+
+window.render = function (t) {
+  for (const [id, [a, b]] of Object.entries(SCENES)) {
+    const f = id === 's1' ? 1 - seg(t, b - .2, b) : fade(t, a, b, .2, .2);
+    $(id).style.opacity = (t >= a && t <= b) ? (a === 0 ? f : f) : 0;
+  }
+  if (t >= SCENES.s7[0]) $('s7').style.opacity = seg(t, SCENES.s7[0], SCENES.s7[0] + .2);
+
+  /* S1 gallery */
+  const sp = eInOut(seg(t, 0, 3.0));
+  grid.style.transform = `translateY(${-sp * SCROLL_END}px)`;
+  // slight motion blur feel while fast scrolling
+  const speed = Math.sin(seg(t, 0, 3.0) * Math.PI);
+  grid.style.filter = `blur(${(speed * 3).toFixed(2)}px)`;
+  $('h1').style.opacity = 1; $('h1').style.transform = 'none'; pop($('h2'), seg(t, .35, .65));
+  $('h2m').style.backgroundSize = `${eOut(seg(t, .55, .9)) * 100}% 100%`;
+  pop($('count'), seg(t, 1.3, 1.6));
+  const hookOut = 1 - seg(t, 3.2, 3.45);
+  ['h1', 'h2', 'count'].forEach(id => $(id).style.opacity = Math.min(+$(id).style.opacity, hookOut));
+  $('topShade').style.opacity = hookOut;
+
+  /* S2 rings + card */
+  const dimP = seg(t, 3.2, 3.6);
+  tiles.forEach(tl => tl.dim.style.opacity = tl.kind === 'book' ? 0 : dimP * .7);
+  ringed.forEach((tl, i) => {
+    const p = seg(t, 3.4 + i * .09, 3.65 + i * .09);
+    tl.ring.style.opacity = p; tl.ring.style.transform = `scale(${.6 + eBack(p) * .4})`;
+  });
+  const cp = seg(t, 4.5, 4.85);
+  $('card2').style.opacity = cp;
+  $('card2').style.transform = `translateY(${(1 - eBack(cp)) * 120}px) scale(${.9 + .1 * eOut(cp)})`;
+  const zp = seg(t, 5.6, 5.9);
+  document.querySelector('#card2 .zero').style.transform = `scale(${1 + (1 - eOut(zp)) * 1.2})`;
+  document.querySelector('#card2 .zero').style.opacity = zp;
+
+  /* S3 reveal */
+  pop($('say'), seg(t, 7.1, 7.4));
+  const lp = seg(t, 7.6, 7.95);
+  $('logo').style.opacity = clamp(lp * 2);
+  $('logo').style.transform = `scale(${.4 + eBack(lp) * .6}) rotate(${(1 - eOut(lp)) * -8}deg)`;
+  $('sw').style.transform = `scaleX(${eOut(seg(t, 7.95, 8.25))})`;
+  pop($('tagline'), seg(t, 8.15, 8.45));
+
+  /* S4 capture */
+  const shotT = 9.55;
+  $('capA').style.opacity = fade(t, 8.8, 12.3); pop($('capA'), Math.min(seg(t, 8.8, 9.1), 1 - seg(t, 12.1, 12.3)));
+  $('capB').style.opacity = 0; pop($('capB'), Math.min(seg(t, 12.3, 12.6), 1 - seg(t, 14.3, 14.5)));
+  pop($('capC'), Math.min(seg(t, 14.5, 14.8), 1 - seg(t, 15.6, 15.8)));
+  const phoneIn = eOut(seg(t, 8.7, 9.2));
+  $('phone').style.transform = `translateY(${(1 - phoneIn) * 500}px)`;
+  const after = seg(t, shotT, shotT + .35);
+  $('appbg').style.opacity = after;
+  $('flash').style.opacity = t < shotT ? 0 : Math.max(0, 1 - (t - shotT) / .35);
+  $('shutter').style.opacity = 1 - after;
+  $('shutter').style.transform = `scale(${t > shotT - .12 && t < shotT + .05 ? .85 : 1})`;
+  const wob = 1 - after;
+  $('page').style.transform = `rotate(${-3.5 * wob + Math.sin(t * 3) * .3 * wob}deg) scale(${.94 + .06 * after})`;
+  $('page').style.boxShadow = after > .5 ? '0 4px 20px rgba(0,0,0,.08)' : '0 12px 40px rgba(0,0,0,.45)';
+  const scanP = seg(t, 10.0, 11.1);
+  $('scan').style.opacity = scanP > 0 && scanP < 1 ? 1 : 0;
+  $('scan').style.top = (170 + scanP * 900) + 'px';
+  document.querySelectorAll('#page .ln').forEach((ln, i) => {
+    const lineY = (60 + i * 62) / 900;
+    const on = scanP >= lineY ? 1 : 0;
+    const off = 1 - seg(t, 11.5, 11.9);
+    ln.querySelector('.box').style.opacity = on * off;
+  });
+  pop($('chip'), seg(t, 11.2, 11.5), 20);
+  $('chip').style.opacity = Math.min(+$('chip').style.opacity, 1 - seg(t, 13.6, 13.8));
+
+  /* S5 highlight drag: line 6 & 7 of the page */
+  const dA = seg(t, 12.6, 13.15), dB = seg(t, 13.2, 13.85);
+  $('hlA').style.backgroundSize = `${eInOut(dA) * 100}% 60%`;
+  $('hlB').style.backgroundSize = `${eInOut(dB) * 100}% 60%`;
+  const pageEl = $('page');
+  const pageLeft = 22 + 50 + 50, lineTop = (k) => 22 + 170 + 60 + k * 62 + 40; // in phone coords
+  let fx, fy;
+  if (t < 13.15) { fx = pageLeft + eInOut(dA) * 330; fy = lineTop(5); }
+  else if (t < 13.2) { fx = pageLeft + 330 - seg(t, 13.15, 13.2) * 330; fy = lineTop(5) + seg(t, 13.15, 13.2) * 62; }
+  else { fx = pageLeft + eInOut(dB) * 420; fy = lineTop(6); }
+  $('finger').style.left = (fx - 22 - 48) + 'px'; $('finger').style.top = (fy - 22 - 10) + 'px';
+  $('finger').style.opacity = Math.min(seg(t, 12.45, 12.6), 1 - seg(t, 13.9, 14.05)) * 1;
+  pop($('toast'), Math.min(seg(t, 13.95, 14.15), 1 - seg(t, 14.9, 15.1)), 20);
+  const sh = seg(t, 14.3, 14.75);
+  $('sheet').style.transform = `translateY(${(1 - eBack(sh)) * 700}px)`;
+
+  /* S6 shelf */
+  pop($('capD'), Math.min(seg(t, 15.75, 16.05), 1 - seg(t, 17.6, 17.8)));
+  pop($('capE'), seg(t, 17.8, 18.1));
+  spines.forEach((s, i) => {
+    const st = s.last ? 17.75 : 15.85 + i * .12;
+    const p = seg(t, st, st + (s.last ? .55 : .45));
+    s.el.style.transform = `translateY(${-(1 - eBounce(p)) * 1300}px)`;
+    s.el.style.opacity = p > 0 ? 1 : 0;
+  });
+  const last = spines[spines.length - 1];
+  $('thud').style.left = (last.x + last.w + 6) + 'px'; $('thud').style.top = (last.base - 150) + 'px';
+  const th = seg(t, 18.1, 18.3);
+  $('thud').style.opacity = Math.min(th, 1 - seg(t, 18.9, 19.1));
+  $('thud').style.transform = `rotate(-10deg) scale(${.5 + eBack(th) * .5})`;
+  pop($('stat'), seg(t, 18.4, 18.7));
+
+  /* S7 CTA */
+  pop($('ctaBig'), seg(t, 19.35, 19.7));
+  $('ctaM').style.backgroundSize = `${eOut(seg(t, 19.7, 20.1)) * 100}% 100%`;
+  pop($('ctaSmall'), seg(t, 20.0, 20.3));
+  pop($('badge'), seg(t, 20.4, 20.75), 60);
+  pop($('arrow'), seg(t, 20.8, 21.1));
+  $('arrow').style.transform += ` translateY(${Math.sin(t * 6) * 6}px)`;
+};
+document.querySelectorAll('.mark').forEach(m => { if (!m.id) m.style.backgroundSize = '100% 100%'; });
+render(0);
+</script>
+</body>
+</html>
